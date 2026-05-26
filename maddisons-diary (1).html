@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Maddison's Diary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  /* ============================================================
+     ===============  EDIT YOUR CONTENT IN THE  =================
+     ===============  <script> BLOCK NEAR THE   =================
+     ===============  BOTTOM (look for POSTS).  =================
+     ============================================================ */
+
+  :root {
+    --bg: #f6f4f2;
+    --bg-2: #efece9;
+    --card: #ffffff;
+    --text: #1c1c1e;
+    --text-2: #8a8a8e;
+    --text-3: #b9b7bb;
+    --accent: #ff2d55;
+    --accent-deep: #c9184a;
+    --accent-soft: #ffe5ec;
+    --hairline: rgba(0, 0, 0, 0.07);
+    --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06);
+    --shadow-lift: 0 2px 6px rgba(0,0,0,0.06), 0 16px 40px rgba(0,0,0,0.10);
+    --radius: 22px;
+    --radius-sm: 16px;
+    --header-h: 56px;
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg-2);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overscroll-behavior-y: none;
+  }
+
+  /* ---------- App shell (the centered phone frame) ---------- */
+  .app {
+    position: relative;
+    width: 100%;
+    max-width: 430px;
+    min-height: 100vh;
+    margin: 0 auto;
+    background: var(--bg);
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.04), 0 30px 80px rgba(0,0,0,0.10);
+  }
+
+  /* ---------- Sticky blurred header ---------- */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    background: rgba(246, 244, 242, 0.72);
+    backdrop-filter: saturate(180%) blur(22px);
+    -webkit-backdrop-filter: saturate(180%) blur(22px);
+    border-bottom: 1px solid var(--hairline);
+  }
+  .header h1 {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .header h1 .dot { color: var(--accent); }
+
+  /* ---------- Scroll area ---------- */
+  .scroll {
+    height: calc(100vh - var(--header-h));
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  .pad { padding: 16px 16px calc(20px + env(safe-area-inset-bottom)); }
+
+  /* ---------- Tab content fade ---------- */
+  .tab-view { display: none; animation: fadeUp .42s cubic-bezier(.2,.7,.2,1); }
+  .tab-view.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- About strip (top of feed) ---------- */
+  .about-strip {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+  }
+  .pfp {
+    flex: 0 0 auto;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 20px;
+    overflow: hidden;
+    box-shadow: 0 0 0 3px #fff, 0 4px 14px rgba(255,45,85,0.28);
+  }
+  .pfp img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .about-text { min-width: 0; }
+  .about-text .name { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
+  .about-text .bio { font-size: 13px; color: var(--text-2); line-height: 1.4; margin-top: 2px; }
+
+  /* ---------- Section label ---------- */
+  .section-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 4px 4px 12px;
+  }
+
+  /* ---------- Feed card ---------- */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    margin-bottom: 18px;
+    transition: transform .28s cubic-bezier(.2,.7,.2,1), box-shadow .28s;
+    cursor: pointer;
+  }
+  .card:active { transform: scale(0.985); box-shadow: var(--shadow-lift); }
+
+  .card-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 13px 14px;
+  }
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, #ffb3c1, var(--accent));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 14px; overflow: hidden;
+    flex: 0 0 auto;
+  }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .head-meta { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+  .head-meta .author { font-size: 14px; font-weight: 600; }
+  .head-meta .date { font-size: 12px; color: var(--text-2); }
+  .tag-pill {
+    margin-left: auto;
+    font-size: 11px; font-weight: 600;
+    color: var(--accent-deep);
+    background: var(--accent-soft);
+    padding: 5px 11px;
+    border-radius: 999px;
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+  }
+
+  .card-title {
+    font-size: 17px; font-weight: 700; letter-spacing: -0.02em;
+    padding: 0 14px 12px;
+    line-height: 1.3;
+  }
+
+  /* ---------- Carousel ---------- */
+  .carousel { position: relative; width: 100%; aspect-ratio: 4 / 5; background: var(--bg-2); }
+  .track {
+    display: flex;
+    width: 100%; height: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    cursor: zoom-in;
+  }
+  .track::-webkit-scrollbar { display: none; }
+  .slide {
+    flex: 0 0 100%;
+    width: 100%; height: 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    position: relative;
+    background: linear-gradient(135deg, #f3e7ea, #e9e2df);
+  }
+  .slide img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+  /* placeholder when no image path is given */
+  .slide.empty::after {
+    content: "📷  add image path";
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-3); font-size: 13px; font-weight: 500; letter-spacing: 0.02em;
+  }
+
+  .dots {
+    position: absolute; bottom: 12px; left: 0; right: 0;
+    display: flex; justify-content: center; gap: 6px;
+    pointer-events: none; z-index: 5;
+  }
+  .dots .d {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(255,255,255,0.55);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+    transition: all .3s cubic-bezier(.2,.7,.2,1);
+  }
+  .dots .d.on { width: 18px; border-radius: 999px; background: #fff; }
+
+  .count-badge {
+    position: absolute; top: 12px; right: 12px; z-index: 5;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    color: #fff; font-size: 11px; font-weight: 600;
+    padding: 4px 9px; border-radius: 999px; pointer-events: none;
+  }
+
+  /* ---------- 18+ glassmorphism overlay ---------- */
+  .mature-veil {
+    position: absolute; inset: 0; z-index: 10;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(26px) saturate(140%);
+    -webkit-backdrop-filter: blur(26px) saturate(140%);
+    transition: opacity .45s ease, backdrop-filter .45s ease;
+  }
+  .mature-veil.revealed {
+    opacity: 0;
+    pointer-events: none;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+  }
+  .badge-18 {
+    width: 48px; height: 48px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.5);
+    color: #fff; font-weight: 800; font-size: 14px; letter-spacing: -0.02em;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+    border: 1.5px solid rgba(255,255,255,0.6);
+  }
+  .veil-label { font-size: 12px; font-weight: 600; color: #3a3a3c; text-align:center; }
+  .view-btn {
+    border: none;
+    background: rgba(0,0,0,0.62);
+    color: #fff;
+    font-family: var(--font);
+    font-size: 13px; font-weight: 600;
+    padding: 9px 18px;
+    border-radius: 999px;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    cursor: pointer;
+    transition: transform .18s ease, background .2s ease;
+  }
+  .view-btn:active { transform: scale(0.94); background: rgba(0,0,0,0.78); }
+
+  /* ---------- Card footer (likes / comments) ---------- */
+  .card-foot {
+    display: flex; align-items: center; gap: 18px;
+    padding: 12px 16px 14px;
+  }
+  .action {
+    display: flex; align-items: center; gap: 6px;
+    background: none; border: none; cursor: pointer;
+    font-family: var(--font); font-size: 14px; font-weight: 600;
+    color: var(--text-2);
+    padding: 0;
+  }
+  .action svg { width: 23px; height: 23px; transition: transform .25s cubic-bezier(.2,1.6,.4,1); }
+  .action .heart-fill { fill: none; stroke: currentColor; stroke-width: 1.8; transition: fill .2s, stroke .2s; }
+  .action.liked { color: var(--accent); }
+  .action.liked .heart-fill { fill: var(--accent); stroke: var(--accent); }
+  .action.pop svg { transform: scale(1.35); }
+  .action .cmt { stroke: currentColor; stroke-width: 1.8; fill: none; }
+
+  /* ---------- Photos grid tab ---------- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+  }
+  .grid-cell {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f3e7ea, #e9e2df);
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  .grid-cell img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s ease; }
+  .grid-cell:active img { transform: scale(1.06); }
+  .grid-cell.empty::after {
+    content: "📷"; position: absolute; inset: 0;
+    display:flex; align-items:center; justify-content:center;
+    color: var(--text-3); font-size: 20px;
+  }
+  .grid-cell .mini-veil {
+    position: absolute; inset: 0; z-index: 4;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .grid-cell .mini-veil span {
+    font-size: 11px; font-weight: 800; color: #fff;
+    background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.6);
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .grid-cell .multi {
+    position: absolute; top: 6px; right: 6px; z-index: 5;
+    color: #fff; filter: drop-shadow(0 1px 2px rgba(0,0,0,.5));
+  }
+  .grid-cell .cmt-tag {
+    position: absolute; bottom: 6px; left: 6px; z-index: 5;
+    display: flex; align-items: center; gap: 3px;
+    color: #fff; font-size: 11px; font-weight: 700;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,.5));
+  }
+  .grid-cell .cmt-tag svg { width: 13px; height: 13px; stroke: #fff; stroke-width: 2; fill: none; }
+
+  /* ---------- About full tab ---------- */
+  .about-page { text-align: center; padding-top: 10px; }
+  .about-page .pfp-lg {
+    width: 96px; height: 96px; margin: 0 auto 14px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-weight:700; font-size:34px; overflow:hidden;
+    box-shadow: 0 0 0 4px #fff, 0 10px 30px rgba(255,45,85,0.30);
+  }
+  .about-page .pfp-lg img { width:100%; height:100%; object-fit:cover; }
+  .about-page .name-lg { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
+  .about-page .handle { font-size: 14px; color: var(--accent-deep); font-weight: 600; margin-top: 2px; }
+  .about-page .bio-lg {
+    font-size: 15px; color: var(--text-2); line-height: 1.55;
+    max-width: 320px; margin: 14px auto 22px;
+  }
+  .stats {
+    display: flex; justify-content: center; gap: 0;
+    background: var(--card); border-radius: var(--radius);
+    box-shadow: var(--shadow); overflow: hidden; max-width: 340px; margin: 0 auto;
+  }
+  .stats .stat { flex: 1; padding: 16px 8px; }
+  .stats .stat + .stat { border-left: 1px solid var(--hairline); }
+  .stats .num { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
+  .stats .lbl { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+
+  /* ============================================================
+     ============  FULL POST PAGE (slides in)  ==================
+     ============================================================ */
+  .page {
+    position: absolute; inset: 0;
+    background: var(--bg);
+    transform: translateX(100%);
+    transition: transform .42s cubic-bezier(.32,.72,0,1);
+    display: flex; flex-direction: column;
+    will-change: transform;
+  }
+  .page.open { transform: translateX(0); }
+  #post-page  { z-index: 100; }
+  #image-page { z-index: 110; }
+
+  .page-header {
+    position: sticky; top: 0; z-index: 10;
+    height: var(--header-h);
+    display: flex; align-items: center; gap: 6px;
+    padding: 0 8px 0 6px;
+    background: rgba(246, 244, 242, 0.72);
+    backdrop-filter: saturate(180%) blur(22px);
+    -webkit-backdrop-filter: saturate(180%) blur(22px);
+    border-bottom: 1px solid var(--hairline);
+  }
+  .back-btn {
+    display: flex; align-items: center; gap: 2px;
+    background: none; border: none; cursor: pointer;
+    color: var(--accent); font-family: var(--font); font-size: 16px; font-weight: 500;
+    padding: 8px;
+  }
+  .back-btn svg { width: 22px; height: 22px; stroke: var(--accent); stroke-width: 2.2; fill: none; }
+  .back-btn:active { opacity: 0.6; }
+  .page-header .header-title { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; margin-left: 2px; }
+
+  .page-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+  .post-meta { display: flex; align-items: center; gap: 10px; padding: 16px 18px 12px; }
+  .post-meta .head-meta .author { font-size: 15px; }
+  .post-body-wrap { padding: 4px 20px 40px; }
+  .post-tag {
+    display: inline-block;
+    font-size: 11px; font-weight: 600; color: var(--accent-deep);
+    background: var(--accent-soft); padding: 5px 11px; border-radius: 999px;
+    margin-bottom: 12px;
+  }
+  .post-title { font-size: 26px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.18; margin-bottom: 14px; }
+  .post-body { font-size: 16px; line-height: 1.68; color: #3a3a3c; white-space: pre-wrap; }
+
+  .post-foot {
+    display: flex; align-items: center; gap: 22px;
+    padding: 18px 20px; margin-top: 6px;
+    border-top: 1px solid var(--hairline);
+  }
+  .post-foot .action { font-size: 15px; }
+  .post-foot .action svg { width: 26px; height: 26px; }
+
+  .post-carousel { aspect-ratio: 1 / 1; }
+
+  /* float-in for body text on post page */
+  #post-page.open .post-body-wrap > * { animation: bodyIn .5s both; }
+  #post-page.open .post-tag { animation-delay: .08s; }
+  #post-page.open .post-title { animation-delay: .12s; }
+  #post-page.open .post-body { animation-delay: .18s; }
+  @keyframes bodyIn { from { opacity:0; transform: translateY(8px);} to {opacity:1; transform:none;} }
+
+  /* ============================================================
+     ============  IMAGE PAGE (image + desc + comments) =========
+     ============================================================ */
+  .img-hero { position: relative; width: 100%; aspect-ratio: 1 / 1; background: linear-gradient(135deg,#f3e7ea,#e9e2df); }
+  .img-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .img-hero.empty::after {
+    content: "📷  add image path"; position: absolute; inset: 0;
+    display:flex; align-items:center; justify-content:center;
+    color: var(--text-3); font-size: 14px; font-weight: 500;
+  }
+
+  /* description box under the image */
+  .desc-block { padding: 16px 18px 6px; }
+  .desc-block .lbl {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text-2); margin-bottom: 8px;
+  }
+  .desc-input {
+    width: 100%;
+    font-family: var(--font); font-size: 15px; line-height: 1.5; color: var(--text);
+    background: var(--card); border: 1px solid var(--hairline); border-radius: var(--radius-sm);
+    padding: 12px 14px; resize: none; outline: none;
+    box-shadow: var(--shadow);
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .desc-input::placeholder { color: var(--text-3); }
+  .desc-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .desc-saved { font-size: 11px; color: var(--accent-deep); font-weight: 600; height: 14px; margin: 6px 2px 0; opacity: 0; transition: opacity .25s; }
+  .desc-saved.show { opacity: 1; }
+
+  /* image-page like row */
+  .img-actions { display: flex; align-items: center; gap: 20px; padding: 6px 18px 4px; }
+  .img-actions .action svg { width: 25px; height: 25px; }
+
+  /* comments */
+  .comments { padding: 8px 18px 20px; }
+  .comments .c-head {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text-2); margin: 12px 0 6px;
+    border-top: 1px solid var(--hairline); padding-top: 16px;
+  }
+  .comment { display: flex; gap: 10px; padding: 10px 0; }
+  .c-avatar {
+    flex: 0 0 auto; width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 13px;
+  }
+  .c-body { min-width: 0; flex: 1; }
+  .c-top { display: flex; align-items: baseline; gap: 8px; }
+  .c-name { font-size: 14px; font-weight: 600; }
+  .c-time { font-size: 12px; color: var(--text-3); }
+  .c-text { font-size: 14.5px; line-height: 1.45; color: #3a3a3c; margin-top: 1px; word-wrap: break-word; }
+  .c-empty { font-size: 14px; color: var(--text-3); padding: 14px 0 4px; }
+
+  /* add-a-comment composer */
+  .composer {
+    position: sticky; bottom: 0;
+    display: flex; align-items: flex-end; gap: 8px;
+    padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
+    background: rgba(246,244,242,0.86);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-top: 1px solid var(--hairline);
+  }
+  .composer textarea {
+    flex: 1; font-family: var(--font); font-size: 15px; line-height: 1.4; color: var(--text);
+    background: var(--card); border: 1px solid var(--hairline); border-radius: 20px;
+    padding: 9px 14px; resize: none; outline: none; max-height: 110px;
+    transition: border-color .2s;
+  }
+  .composer textarea:focus { border-color: var(--accent); }
+  .send-btn {
+    flex: 0 0 auto; width: 38px; height: 38px; border-radius: 50%;
+    border: none; cursor: pointer;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform .15s, opacity .2s, background .2s;
+  }
+  .send-btn svg { width: 19px; height: 19px; stroke: #fff; stroke-width: 2.2; fill: none; }
+  .send-btn:active { transform: scale(0.9); }
+  .send-btn:disabled { background: var(--text-3); opacity: .6; cursor: default; }
+</style>
+</head>
+<body>
+  <div class="app" id="app">
+
+    <!-- ===== Header ===== -->
+    <header class="header">
+      <h1 id="header-title">Maddison's Diary<span class="dot">.</span></h1>
+    </header>
+
+    <!-- ===== Scrollable content ===== -->
+    <main class="scroll" id="scroll">
+
+      <!-- HOME -->
+      <section class="tab-view active" id="view-home">
+        <div class="pad">
+          <div class="about-strip">
+            <div class="pfp" id="strip-pfp"></div>
+            <div class="about-text">
+              <div class="name" id="strip-name"></div>
+              <div class="bio" id="strip-bio"></div>
+            </div>
+          </div>
+          <div id="feed"></div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ===== Full post page ===== -->
+    <section class="page" id="post-page">
+      <header class="page-header">
+        <button class="back-btn" data-close="post-page">
+          <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+          Back
+        </button>
+      </header>
+      <div class="page-scroll" id="post-scroll"></div>
+    </section>
+
+    <!-- ===== Image page (image + description + comments) ===== -->
+    <section class="page" id="image-page">
+      <header class="page-header">
+        <button class="back-btn" data-close="image-page">
+          <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+          Back
+        </button>
+        <span class="header-title">Photo</span>
+      </header>
+      <div class="page-scroll" id="image-scroll"></div>
+    </section>
+
+  </div>
+
+<script>
+/* ============================================================
+   ██████  EDIT YOUR CONTENT HERE  ██████
+   This is the ONLY place you edit. Everything you need is in
+   PROFILE and POSTS just below.
+
+   HOW TO EDIT:
+   • Keep the "quotes" around text and the commas at line ends.
+   • Use \n inside text for a new paragraph.
+   • Add an entry: copy a whole { ... } block, paste it above the
+     others, give it a new id number.
+   • Delete an entry: remove its whole { ... } block.
+
+   IMAGES: put your pictures in an "images" folder next to this
+   file and use forward slashes, e.g.  "images/img1.jpg"
+   (never a C:\... path). Leave "" to show a placeholder.
+   mature: true  ->  blurs the photo behind an 18+ cover.
+   ============================================================ */
+
+const PROFILE = {
+  name: "Maddison",
+  handle: "@maddison",
+  initials: "M",
+  avatar: "img1.jpg",
+  bioShort: "Little moments, kept on purpose. ✨",
+  bioLong: "Hi, I'm Maddison. This is my quiet corner of the internet — a diary of the days worth remembering. Photos, thoughts, and the in-between.",
+};
+
+const POSTS = [
+  {
+    id: 1,
+    author: "Maddison",
+    date: "May 24, 2026",
+    tag: "Travel",
+    title: "Morning light over the coast",
+    body: "Woke up before sunrise just to catch this. The whole sky turned the softest shade of peach and for a moment everything was completely still.\n\nSome mornings are worth losing sleep over.",
+    mature: true,
+    likes: 128,
+    images: [
+      {
+        src: "img1.jpg",
+        caption: "First light, just before six. Worth the alarm.",
+        comments: [
+          { name: "Ava",  text: "This is unreal 😍", time: "2h" },
+          { name: "Liam", text: "Okay where is this?? Need to go.", time: "1h" },
+          { name: "Noor", text: "The colours!! 🧡", time: "44m" },
+        ],
+      },
+      {
+        src: "img1.jpg",
+        caption: "Same spot, ten minutes later.",
+        comments: [
+          { name: "Ravi", text: "Second one is my favourite.", time: "30m" },
+        ],
+      },
+    ],
+  },
+  {
+    id: 2,
+    author: "Maddison",
+    date: "May 21, 2026",
+    tag: "Daily",
+    title: "Slow afternoon, good coffee",
+    body: "Nothing on the calendar, just a window seat and a flat white. Wrote three pages in my journal and didn't check my phone once.\n\nHighly recommend doing nothing on purpose.",
+    mature: false,
+    likes: 86,
+    images: [
+      {
+        src: "",
+        caption: "Flat white, window seat, zero plans.",
+        comments: [
+          { name: "Mira", text: "the dream honestly", time: "5h" },
+        ],
+      },
+    ],
+  },
+  {
+    id: 3,
+    author: "Maddison",
+    date: "May 18, 2026",
+    tag: "Personal",
+    title: "A page I'm keeping private-ish",
+    body: "Some entries are just for the diary. Tap to view if you'd like — content here is marked 18+.\n\n(This card demonstrates the mature-content blur. Swap the flag to false anytime.)",
+    mature: true,
+    likes: 54,
+    images: [
+      { src: "", caption: "Marked sensitive.", comments: [] },
+      { src: "", caption: "", comments: [] },
+    ],
+  },
+  {
+    id: 4,
+    author: "Maddison",
+    date: "May 14, 2026",
+    tag: "Garden",
+    title: "Everything is blooming again",
+    body: "Three frames of green this week. The roses finally opened and the whole balcony smells like summer.",
+    mature: false,
+    likes: 173,
+    images: [
+      { src: "", caption: "The first rose of the season.", comments: [
+          { name: "Sara", text: "gorgeous 🌹", time: "3d" },
+          { name: "Tom",  text: "what variety is this?", time: "2d" },
+      ] },
+      { src: "", caption: "Basil going wild.", comments: [] },
+      { src: "", caption: "Morning watering ritual.", comments: [] },
+    ],
+  },
+];
+
+/* ============================================================
+   ██████  NO NEED TO EDIT BELOW THIS LINE  ██████
+   ============================================================ */
+
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+const HEART = `<svg viewBox="0 0 24 24"><path class="heart-fill" d="M12 21s-7.5-4.6-10-9.2C.4 8.5 2 5 5.4 5c2 0 3.3 1.1 4.1 2.3l.5.8.5-.8C11.3 6.1 12.6 5 14.6 5 18 5 19.6 8.5 22 11.8 19.5 16.4 12 21 12 21Z"/></svg>`;
+const CMT   = `<svg viewBox="0 0 24 24"><path class="cmt" d="M21 11.5a8.4 8.4 0 0 1-12 7.6L3 21l1.9-6A8.5 8.5 0 1 1 21 11.5Z"/></svg>`;
+const CMT_S = `<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-12 7.6L3 21l1.9-6A8.5 8.5 0 1 1 21 11.5Z"/></svg>`;
+const MULTI = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="8" y="3" width="13" height="13" rx="2.5"/><path d="M3 8v11a2.5 2.5 0 0 0 2.5 2.5H16"/></svg>`;
+const SEND  = `<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`;
+
+const liked = {}; // post id -> bool
+
+/* Normalize images to objects ONCE so edits persist in-session */
+function normImage(x) {
+  if (typeof x === "string") return { src: x, caption: "", comments: [] };
+  return { src: x.src || "", caption: x.caption || "", comments: Array.isArray(x.comments) ? x.comments : [] };
+}
+POSTS.forEach(p => {
+  p.images = (p.images && p.images.length ? p.images : [""]).map(normImage);
+});
+
+const commentCount = post => post.images.reduce((s, im) => s + im.comments.length, 0);
+
+/* color a comment avatar from the name */
+function nameColor(name) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+  return `hsl(${Math.abs(h) % 360} 62% 58%)`;
+}
+const initialsOf = n => (n || "?").trim().charAt(0).toUpperCase();
+
+function avatarMarkup(cls, src, initials) {
+  if (src) return `<div class="${cls}"><img src="${src}" alt=""></div>`;
+  return `<div class="${cls}">${initials}</div>`;
+}
+
+/* ---- Carousel builder (shared by feed + post page) ---- */
+function buildCarousel(post, { mature = false } = {}) {
+  const imgs = post.images;
+  const slides = imgs.map(im => {
+    const empty = !im.src ? " empty" : "";
+    const inner = im.src ? `<img src="${im.src}" alt="" loading="lazy">` : "";
+    return `<div class="slide${empty}">${inner}</div>`;
+  }).join("");
+
+  const dots = imgs.length > 1
+    ? `<div class="dots">${imgs.map((_, i) => `<span class="d ${i === 0 ? "on" : ""}"></span>`).join("")}</div>`
+    : "";
+  const badge = imgs.length > 1 ? `<div class="count-badge">1/${imgs.length}</div>` : "";
+  const veil = mature ? `
+    <div class="mature-veil">
+      <div class="badge-18">18+</div>
+      <div class="veil-label">This image is marked sensitive</div>
+      <button class="view-btn" type="button">View image</button>
+    </div>` : "";
+
+  return `<div class="carousel" data-post="${post.id}">
+            <div class="track">${slides}</div>
+            ${dots}${badge}${veil}
+          </div>`;
+}
+
+/* wire up a carousel after it's in the DOM (dots, 18+, tap-to-open image) */
+function activateCarousel(carouselEl) {
+  const track = $(".track", carouselEl);
+  const dots  = $$(".dots .d", carouselEl);
+  const badge = $(".count-badge", carouselEl);
+  const total = $$(".slide", carouselEl).length;
+  const postId = +carouselEl.dataset.post;
+
+  if (dots.length || badge) {
+    track.addEventListener("scroll", () => {
+      const i = Math.round(track.scrollLeft / track.clientWidth);
+      dots.forEach((d, k) => d.classList.toggle("on", k === i));
+      if (badge) badge.textContent = `${Math.min(i + 1, total)}/${total}`;
+    }, { passive: true });
+  }
+
+  const veil = $(".mature-veil", carouselEl);
+  if (veil) {
+    $(".view-btn", veil).addEventListener("click", e => {
+      e.stopPropagation();
+      veil.classList.add("revealed");
+    });
+  }
+
+  /* tap (not swipe) on the photo opens the image page */
+  let sx = 0, sy = 0, st = 0;
+  track.addEventListener("pointerdown", e => { sx = e.clientX; sy = e.clientY; st = Date.now(); });
+  track.addEventListener("pointerup", e => {
+    const moved = Math.abs(e.clientX - sx) > 8 || Math.abs(e.clientY - sy) > 8;
+    if (moved || Date.now() - st > 500) return;        // it was a swipe / long press
+    const i = Math.round(track.scrollLeft / track.clientWidth);
+    openImage(postId, i);
+  });
+}
+
+/* ---- like footer ---- */
+function footMarkup(post) {
+  const isLiked = liked[post.id];
+  const count = post.likes + (isLiked ? 1 : 0);
+  return `
+    <button class="action like ${isLiked ? "liked" : ""}" data-id="${post.id}">
+      ${HEART}<span class="like-count">${count}</span>
+    </button>
+    <button class="action cmt-btn">
+      ${CMT}<span class="cmt-count">${commentCount(post)}</span>
+    </button>`;
+}
+
+function wireLike(btn) {
+  btn.addEventListener("click", e => {
+    e.stopPropagation();
+    const id = +btn.dataset.id;
+    liked[id] = !liked[id];
+    btn.classList.add("pop");
+    setTimeout(() => btn.classList.remove("pop"), 260);
+    const post = POSTS.find(p => p.id === id);
+    const base = post.likes + (liked[id] ? 1 : 0);
+    $$(`.like[data-id="${id}"]`).forEach(b => {
+      b.classList.toggle("liked", liked[id]);
+      $(".like-count", b).textContent = base;
+    });
+  });
+}
+
+/* refresh every visible comment counter for a post */
+function refreshCommentCounts(post) {
+  // update the comment counter wherever a like button for this post lives
+  $$(`.like[data-id="${post.id}"]`).forEach(b => {
+    const foot = b.parentElement;
+    const c = $(".cmt-count", foot);
+    if (c) c.textContent = commentCount(post);
+  });
+}
+
+/* ---- home feed ---- */
+function renderFeed() {
+  const feed = $("#feed");
+  feed.innerHTML = POSTS.map(post => `
+    <article class="card" data-id="${post.id}">
+      <div class="card-head">
+        ${avatarMarkup("avatar", PROFILE.avatar, PROFILE.initials)}
+        <div class="head-meta">
+          <span class="author">${post.author}</span>
+          <span class="date">${post.date}</span>
+        </div>
+        <span class="tag-pill">${post.tag}</span>
+      </div>
+      <div class="card-title">${post.title}</div>
+      ${buildCarousel(post, { mature: post.mature })}
+      <div class="card-foot">${footMarkup(post)}</div>
+    </article>
+  `).join("");
+
+  $$(".card", feed).forEach(card => {
+    const id = +card.dataset.id;
+    activateCarousel($(".carousel", card));
+    wireLike($(".like", card));
+    card.addEventListener("click", e => {
+      if (e.target.closest(".action") || e.target.closest(".carousel")) return;
+      openPost(id);
+    });
+  });
+}
+
+/* ---- about strip ---- */
+function renderStrip() {
+  $("#strip-pfp").innerHTML = PROFILE.avatar ? `<img src="${PROFILE.avatar}" alt="">` : PROFILE.initials;
+  $("#strip-name").textContent = PROFILE.name;
+  $("#strip-bio").textContent = PROFILE.bioShort;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+/* ---- full post page ---- */
+function openPost(id) {
+  const post = POSTS.find(p => p.id === id);
+  if (!post) return;
+  const isLiked = liked[id];
+  const count = post.likes + (isLiked ? 1 : 0);
+
+  $("#post-scroll").innerHTML = `
+    <div class="post-meta">
+      ${avatarMarkup("avatar", PROFILE.avatar, PROFILE.initials)}
+      <div class="head-meta">
+        <span class="author">${post.author}</span>
+        <span class="date">${post.date}</span>
+      </div>
+    </div>
+    ${buildCarousel(post, { mature: post.mature })}
+    <div class="post-body-wrap">
+      <span class="post-tag">${post.tag}</span>
+      <h2 class="post-title">${escapeHtml(post.title)}</h2>
+      <div class="post-body">${escapeHtml(post.body)}</div>
+    </div>
+    <div class="post-foot">
+      <button class="action like ${isLiked ? "liked" : ""}" data-id="${id}">
+        ${HEART}<span class="like-count">${count}</span>
+      </button>
+      <button class="action cmt-btn">${CMT}<span class="cmt-count">${commentCount(post)}</span></button>
+    </div>`;
+
+  $(".carousel", $("#post-scroll")).classList.add("post-carousel");
+  activateCarousel($(".carousel", $("#post-scroll")));
+  wireLike($(".like", $("#post-scroll")));
+
+  $("#post-scroll").scrollTop = 0;
+  $("#post-page").classList.add("open");
+}
+
+/* ---- image page (image + description + comments) ---- */
+function commentMarkup(c) {
+  return `<div class="comment">
+    <div class="c-avatar" style="background:${nameColor(c.name)}">${initialsOf(c.name)}</div>
+    <div class="c-body">
+      <div class="c-top"><span class="c-name">${escapeHtml(c.name)}</span><span class="c-time">${escapeHtml(c.time || "")}</span></div>
+      <div class="c-text">${escapeHtml(c.text)}</div>
+    </div>
+  </div>`;
+}
+
+function renderComments(im) {
+  if (!im.comments.length) return `<div class="c-empty">No comments yet — be the first.</div>`;
+  return im.comments.map(commentMarkup).join("");
+}
+
+function openImage(postId, idx) {
+  const post = POSTS.find(p => p.id === postId);
+  if (!post) return;
+  const im = post.images[idx] || post.images[0];
+
+  const empty = !im.src ? " empty" : "";
+  const heroImg = im.src ? `<img src="${im.src}" alt="">` : "";
+  const veil = post.mature ? `
+    <div class="mature-veil">
+      <div class="badge-18">18+</div>
+      <div class="veil-label">This image is marked sensitive</div>
+      <button class="view-btn" type="button">View image</button>
+    </div>` : "";
+
+  $("#image-scroll").innerHTML = `
+    <div class="img-hero${empty}">${heroImg}${veil}</div>
+
+    <div class="desc-block">
+      <div class="lbl">Description</div>
+      <textarea class="desc-input" rows="2" placeholder="Add a little description…">${escapeHtml(im.caption)}</textarea>
+      <div class="desc-saved">Saved ✓</div>
+    </div>
+
+    <div class="img-actions">
+      <button class="action like ${liked[postId] ? "liked" : ""}" data-id="${postId}">
+        ${HEART}<span class="like-count">${post.likes + (liked[postId] ? 1 : 0)}</span>
+      </button>
+      <button class="action cmt-btn">${CMT}<span class="img-cmt-count">${im.comments.length}</span></button>
+    </div>
+
+    <div class="comments">
+      <div class="c-head">Comments · <span class="img-cmt-count2">${im.comments.length}</span></div>
+      <div class="c-list">${renderComments(im)}</div>
+    </div>
+
+    <div class="composer">
+      <textarea class="c-input" rows="1" placeholder="Add a comment…"></textarea>
+      <button class="send-btn" disabled>${SEND}</button>
+    </div>
+  `;
+
+  // 18+ reveal on hero
+  const v = $(".mature-veil", $("#image-scroll"));
+  if (v) $(".view-btn", v).addEventListener("click", () => v.classList.add("revealed"));
+
+  // like
+  wireLike($(".like", $("#image-scroll")));
+
+  // description editing (in-session)
+  const desc = $(".desc-input", $("#image-scroll"));
+  const saved = $(".desc-saved", $("#image-scroll"));
+  const autosize = el => { el.style.height = "auto"; el.style.height = el.scrollHeight + "px"; };
+  autosize(desc);
+  let saveTimer;
+  desc.addEventListener("input", () => {
+    autosize(desc);
+    im.caption = desc.value;
+    saved.classList.add("show");
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => saved.classList.remove("show"), 1200);
+  });
+
+  // comment composer (in-session)
+  const input = $(".c-input", $("#image-scroll"));
+  const send  = $(".send-btn", $("#image-scroll"));
+  const sizeIn = () => { input.style.height = "auto"; input.style.height = Math.min(input.scrollHeight, 110) + "px"; };
+  input.addEventListener("input", () => { sizeIn(); send.disabled = input.value.trim() === ""; });
+  function addComment() {
+    const text = input.value.trim();
+    if (!text) return;
+    im.comments.push({ name: PROFILE.name || "You", text, time: "now" });
+    $(".c-list", $("#image-scroll")).innerHTML = renderComments(im);
+    $(".img-cmt-count", $("#image-scroll")).textContent = im.comments.length;
+    $(".img-cmt-count2", $("#image-scroll")).textContent = im.comments.length;
+    input.value = ""; sizeIn(); send.disabled = true;
+    refreshCommentCounts(post);   // keep feed / post page counts in sync
+    const list = $(".c-list", $("#image-scroll"));
+    list.lastElementChild?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+  send.addEventListener("click", addComment);
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); addComment(); }
+  });
+
+  $("#image-scroll").scrollTop = 0;
+  $("#image-page").classList.add("open");
+}
+
+/* ---- back buttons ---- */
+$$(".back-btn").forEach(b => {
+  b.addEventListener("click", () => $("#" + b.dataset.close).classList.remove("open"));
+});
+
+/* ---- init ---- */
+renderStrip();
+renderFeed();
+</script>
+</body>
+</html>
